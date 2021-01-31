@@ -1,0 +1,23 @@
+{"restaurantSummary":
+{
+  "restaurantId": "S",
+  "restaurantNumber": "S__LSI",
+  "restaurantLogoUrl": "S",
+  "creationDate": "N__SK",
+  "lastUpdateOn": "N",
+  "lastUpdatedBy": "S",
+  "restaurantName": "S",
+  "foodPickUpAddress": "M",
+  "addressLat__long": "S__LSI",
+  "chefId": "S__LSI",
+  "servingStartDate": "N",
+  "recipeCount": "N",
+  "totalOrdersProcessed": "N",
+  "totalReviewCount": "N",
+  "currentReviewStars": "S__GSI",
+  "chatId": "S",
+  "isAvailableForChatNow": "S__LSI",
+  "displayLanguage": "S__PK",
+  "activeMenuItemSummary": "S"
+}
+}

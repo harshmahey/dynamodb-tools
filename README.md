@@ -148,5 +148,8 @@ resources:
             NonKeyAttributes: []
             ProjectionType: "ALL"
 ```
+8. SAMPLE DATA:
+- Sample yml file is available [here].(https://github.com/harshmahey/dynamodb-tools/blob/main/serverless.yml)
+- Sample json file and wrapper file are src/test/resources.
 
-### Please feel free to contact me [harshmahey@gmail.com]()  for any questions/concerns.
+#### Please feel free to contact me [harshmahey@gmail.com]()  for any questions/concerns.
