@@ -10,7 +10,7 @@ This will generate
     mvn exec:java -Dexec.mainClass="com.snrapps.imcfy.tools.utils.DynamodbObjGenerator" 
     
 ### Steps to generate the serverless project file (serverless.yml).
-1. Download the jar file from  [here](https://www.github.com/).
+1. Download the jar file from  [here](https://github.com/harshmahey/dynamodb-tools).
 2. Create json file which has table details. Here is a sample file.(restaurantSummary.json) 
  
 ``` 
@@ -57,17 +57,96 @@ This will generate
 /opt/ddl-tables/restaurantHotel.json
 ```
 6. Execute the command 
-    java -jar 
-# Hello Markdown in VS Code!
+```    
+    java -jar dynamodb-tools-1.0.0-SNAPSHOT.jar /opt/ddl-summary.txt
+ ```
+7. This generates a file - serverless.yml in the root directory
+```
 
-This is a simple introduction to compiling Markdown in VS Code.
+service: "ddl-handler"
+frameworkVersion: "2"
+provider:
+  name: "aws"
+  runtime: "nodejs12.x"
+  stage: "dev"
+  region: "us-east-1"
+resources:
+  Resources:
+    restaurantSummary:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "displayLanguage"
+          AttributeType: "S"
+        - AttributeName: "creationDate"
+          AttributeType: "N"
+        - AttributeName: "currentReviewStars"
+          AttributeType: "S"
+        - AttributeName: "restaurantNumber"
+          AttributeType: "S"
+        - AttributeName: "addressLat__long"
+          AttributeType: "S"
+        - AttributeName: "chefId"
+          AttributeType: "S"
+        - AttributeName: "isAvailableForChatNow"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "displayLanguage"
+          KeyType: "HASH"
+        - AttributeName: "creationDate"
+          KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: "5"
+          WriteCapacityUnits: "5"
+        TableName: "restaurantSummary"
+        GlobalSecondaryIndexes:
+        - IndexName: "GSI_currentReviewStars"
+          KeySchema:
+          - AttributeName: "currentReviewStars"
+            KeyType: "HASH"
+          Projection:
+            NonKeyAttributes: []
+            ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: "5"
+            WriteCapacityUnits: "5"
+        LocalSecondaryIndexes:
+        - IndexName: "LSI_restaurantNumber"
+          KeySchema:
+          - AttributeName: "displayLanguage"
+            KeyType: "HASH"
+          - AttributeName: "restaurantNumber"
+            KeyType: "RANGE"
+          Projection:
+            NonKeyAttributes: []
+            ProjectionType: "ALL"
+        - IndexName: "LSI_addressLat__long"
+          KeySchema:
+          - AttributeName: "displayLanguage"
+            KeyType: "HASH"
+          - AttributeName: "addressLat__long"
+            KeyType: "RANGE"
+          Projection:
+            NonKeyAttributes: []
+            ProjectionType: "ALL"
+        - IndexName: "LSI_chefId"
+          KeySchema:
+          - AttributeName: "displayLanguage"
+            KeyType: "HASH"
+          - AttributeName: "chefId"
+            KeyType: "RANGE"
+          Projection:
+            NonKeyAttributes: []
+            ProjectionType: "ALL"
+        - IndexName: "LSI_isAvailableForChatNow"
+          KeySchema:
+          - AttributeName: "displayLanguage"
+            KeyType: "HASH"
+          - AttributeName: "isAvailableForChatNow"
+            KeyType: "RANGE"
+          Projection:
+            NonKeyAttributes: []
+            ProjectionType: "ALL"
+```
 
-Things you'll need:
-
-* [Node.js](https://nodejs.org)
-* [markdown-it](https://www.npmjs.com/package/markdown-it)
-* [tasks.json](/docs/editor/tasks)
-
-## Section Title
-
-> This block quote is here for your information.
+### Please feel free to contact me [harshmahey@gmail.com]()  for any questions/concerns.
