@@ -1,0 +1,11 @@
+{
+  "service": "ddl-handler",
+  "frameworkVersion": "2",
+  "provider": {
+    "name": "aws",
+    "runtime": "nodejs12.x",
+    "stage": "dev",
+    "region": "us-east-1"
+  },
+  "resources": __APPEND_GEN_DATA__
+}
