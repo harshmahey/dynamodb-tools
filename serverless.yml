@@ -15,7 +15,7 @@ resources:
         - AttributeName: "displayLanguage"
           AttributeType: "S"
         - AttributeName: "creationDate"
-          AttributeType: "N"
+          AttributeType: "S"
         - AttributeName: "currentReviewStars"
           AttributeType: "S"
         - AttributeName: "restaurantNumber"
