@@ -1,0 +1,485 @@
+{
+  "service": {
+    "service": "ddl-handler",
+    "serviceObject": {
+      "name": "ddl-handler"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs12.x",
+      "stage": "dev",
+      "region": "us-east-1",
+      "variableSyntax": "\\${([^{}:]+?(?:\\(|:)(?:[^:{}][^{}]*?)?)}",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "restaurantSummary": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "displayLanguage",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "creationDate",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "currentReviewStars",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "restaurantNumber",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "addressLat__long",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "chefId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "isAvailableForChatNow",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "displayLanguage",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "creationDate",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": "5",
+                "WriteCapacityUnits": "5"
+              },
+              "TableName": "restaurantSummary",
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "GSI_currentReviewStars",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "currentReviewStars",
+                      "KeyType": "HASH"
+                    }
+                  ],
+                  "Projection": {
+                    "NonKeyAttributes": [],
+                    "ProjectionType": "ALL"
+                  },
+                  "ProvisionedThroughput": {
+                    "ReadCapacityUnits": "5",
+                    "WriteCapacityUnits": "5"
+                  }
+                }
+              ],
+              "LocalSecondaryIndexes": [
+                {
+                  "IndexName": "LSI_restaurantNumber",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "displayLanguage",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "restaurantNumber",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "NonKeyAttributes": [],
+                    "ProjectionType": "ALL"
+                  }
+                },
+                {
+                  "IndexName": "LSI_addressLat__long",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "displayLanguage",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "addressLat__long",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "NonKeyAttributes": [],
+                    "ProjectionType": "ALL"
+                  }
+                },
+                {
+                  "IndexName": "LSI_chefId",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "displayLanguage",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "chefId",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "NonKeyAttributes": [],
+                    "ProjectionType": "ALL"
+                  }
+                },
+                {
+                  "IndexName": "LSI_isAvailableForChatNow",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "displayLanguage",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "isAvailableForChatNow",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "NonKeyAttributes": [],
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      }
+    },
+    "pluginsData": {},
+    "functions": {},
+    "resources": {
+      "Resources": {
+        "restaurantSummary": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "displayLanguage",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "creationDate",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "currentReviewStars",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "restaurantNumber",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "addressLat__long",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "chefId",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "isAvailableForChatNow",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "displayLanguage",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "creationDate",
+                "KeyType": "RANGE"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": "5",
+              "WriteCapacityUnits": "5"
+            },
+            "TableName": "restaurantSummary",
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "GSI_currentReviewStars",
+                "KeySchema": [
+                  {
+                    "AttributeName": "currentReviewStars",
+                    "KeyType": "HASH"
+                  }
+                ],
+                "Projection": {
+                  "NonKeyAttributes": [],
+                  "ProjectionType": "ALL"
+                },
+                "ProvisionedThroughput": {
+                  "ReadCapacityUnits": "5",
+                  "WriteCapacityUnits": "5"
+                }
+              }
+            ],
+            "LocalSecondaryIndexes": [
+              {
+                "IndexName": "LSI_restaurantNumber",
+                "KeySchema": [
+                  {
+                    "AttributeName": "displayLanguage",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "restaurantNumber",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "NonKeyAttributes": [],
+                  "ProjectionType": "ALL"
+                }
+              },
+              {
+                "IndexName": "LSI_addressLat__long",
+                "KeySchema": [
+                  {
+                    "AttributeName": "displayLanguage",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "addressLat__long",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "NonKeyAttributes": [],
+                  "ProjectionType": "ALL"
+                }
+              },
+              {
+                "IndexName": "LSI_chefId",
+                "KeySchema": [
+                  {
+                    "AttributeName": "displayLanguage",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "chefId",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "NonKeyAttributes": [],
+                  "ProjectionType": "ALL"
+                }
+              },
+              {
+                "IndexName": "LSI_isAvailableForChatNow",
+                "KeySchema": [
+                  {
+                    "AttributeName": "displayLanguage",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "isAvailableForChatNow",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "NonKeyAttributes": [],
+                  "ProjectionType": "ALL"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "layers": {},
+    "initialServerlessConfig": {
+      "service": {
+        "$ref": "$[\"service\"][\"serviceObject\"]"
+      },
+      "frameworkVersion": "2",
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "isDashboardMonitoringPreconfigured": false
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/ddl-handler/dev/1612676858335-2021-02-07T05:47:38.335Z",
+    "artifact": ""
+  }
+}
