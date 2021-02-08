@@ -1,2 +1,1 @@
 /opt/ddl-tables/restaurantSummary.json
-/opt/ddl-tables/restuarantDetails.json

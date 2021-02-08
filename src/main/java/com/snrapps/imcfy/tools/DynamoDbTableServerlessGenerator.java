@@ -39,7 +39,9 @@ public class DynamoDbTableServerlessGenerator extends SpringBootServletInitializ
           //   log.info("args=>"+args);
           //  log.info("args[1]=>"+args.length);
             if (args!=null && args.length>0 && args[0] != null ) {
-                String ddlTablesFileLocation = args[0];
+
+               String ddlTablesFileLocation = args[0];
+                //log.info(ddlTablesFileLocation);
                 List<String> result = Files.readAllLines(Paths.get(ddlTablesFileLocation));
 
                 StringBuffer sbLocal = new StringBuffer();
@@ -69,7 +71,8 @@ public class DynamoDbTableServerlessGenerator extends SpringBootServletInitializ
                 System.exit(1);
             }
         } catch (Exception exception) {
-            log.error(exception.getStackTrace().toString());
+            exception.printStackTrace();
+            log.error("process failed :(");
             System.exit(1);
         }
 

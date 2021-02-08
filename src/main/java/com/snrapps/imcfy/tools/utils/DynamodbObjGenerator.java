@@ -21,11 +21,16 @@ public class DynamodbObjGenerator {
         String fullTableTag="";
         Gson gson = new Gson();
         Map map = gson.fromJson(jsonObjAsString, Map.class);
-        Iterator<Map.Entry<String, Object>> iterator = map.entrySet().iterator();
+        List<String> keyList= new ArrayList<String>();
+
+
+        log.info("keyList=>"+keyList.toString());
         int counter=0;
         MyDynamoDBTable myDynamoDBTable =new MyDynamoDBTable();
+        Iterator<Map.Entry<String, Object>>  iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Object> entry = iterator.next();
+            keyList.add(entry.getKey()) ;
             String tableName="";
             //TBD: Clean up
             if (counter == 0 ) {
@@ -33,6 +38,7 @@ public class DynamodbObjGenerator {
                 tableName=entry.getKey();
 
                 Map<String, List> realDataMap= getMyDynamoDBTableData(childDataMap);
+                keyList.addAll(childDataMap.keySet());
                 List<AttributeDefinition> attributeDefinitionList = getAttributeDefinitionList(realDataMap);
 
                 List<KeySchema> keySchemaList = new ArrayList<KeySchema>();
@@ -45,9 +51,9 @@ public class DynamodbObjGenerator {
 
                 ProvisionedThroughput provisionedThroughput = getProvisionThroughput();
 
-                List<GlobalSecondaryIndex> globalSecondaryIndices = getGlobalSecondaryIndexes(realDataMap);
+                List<GlobalSecondaryIndex> globalSecondaryIndices = getGlobalSecondaryIndexes(realDataMap,keyList);
 
-                List<LocalSecondaryIndex> localSecondaryIndices = getLocalSecondaryIndexes(realDataMap);
+                List<LocalSecondaryIndex> localSecondaryIndices = getLocalSecondaryIndexes(realDataMap,keyList);
 
 
                 Properties properties = new Properties();
@@ -81,7 +87,7 @@ public class DynamodbObjGenerator {
     }
 
 
-    private List<LocalSecondaryIndex> getLocalSecondaryIndexes(Map childDataMap ) throws Exception {
+    private List<LocalSecondaryIndex> getLocalSecondaryIndexes(Map childDataMap,List<String> keyList ) throws Exception {
 
         List<LocalSecondaryIndex> localSecondaryIndexList = new ArrayList<LocalSecondaryIndex>();
         Iterator<Map.Entry<String, List>> innerIterator = childDataMap.entrySet().iterator();
@@ -117,8 +123,8 @@ public class DynamodbObjGenerator {
                     localSecondaryIndex.setKeySchema(keySchemaList);
 
                     Projection projection = new Projection();
-                    projection.setProjectionType("ALL");
-                   // projection.setNonKeyAttributes();
+                    projection.setProjectionType("INCLUDE");
+                    projection.setNonKeyAttributes(keyList);
                     localSecondaryIndex.setProjection(projection);
 
                     localSecondaryIndexList.add(localSecondaryIndex);
@@ -132,7 +138,7 @@ public class DynamodbObjGenerator {
 
 
 
-    private List<GlobalSecondaryIndex> getGlobalSecondaryIndexes(Map childDataMap ) throws Exception {
+    private List<GlobalSecondaryIndex> getGlobalSecondaryIndexes(Map childDataMap,List<String> keyList ) throws Exception {
 
         List<GlobalSecondaryIndex> globalSecondaryIndexList = new ArrayList<GlobalSecondaryIndex>();
         Iterator<Map.Entry<String, List>> innerIterator = childDataMap.entrySet().iterator();
@@ -162,7 +168,9 @@ public class DynamodbObjGenerator {
                     globalSecondaryIndex.setKeySchema(keySchemaList);
 
                     Projection projection = new Projection();
-                    projection.setProjectionType("ALL");
+                    projection.setProjectionType("INCLUDE");
+                    projection.setNonKeyAttributes(keyList);
+
                     globalSecondaryIndex.setProjection(projection);
 
                     globalSecondaryIndexList.add(globalSecondaryIndex);
@@ -288,7 +296,7 @@ public class DynamodbObjGenerator {
                         }
                         allKeys.add(innerEntry.getKey());
                         uniqueValMap.put(innerEntry.getValue().toString(),allKeys);
-                     //   log.info("allKeys=>"+allKeys);
+                        //log.info("allKeys=>"+allKeys);
                     } else {
                         log.info("!!!!!!!!!!!!!");
                         log.info("IGNORING FIELDS");
