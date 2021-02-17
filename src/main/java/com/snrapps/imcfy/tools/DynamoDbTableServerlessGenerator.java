@@ -46,8 +46,10 @@ public class DynamoDbTableServerlessGenerator extends SpringBootServletInitializ
 
                 StringBuffer sbLocal = new StringBuffer();
                 for (String eachRowVal : result) {
-                    sbLocal.append(dynamodbObjGenerator.generate(fileHandler.readContent(eachRowVal)));
-                    sbLocal.append(",");
+                    if (eachRowVal!=null && eachRowVal.trim().length()>0) {
+                        sbLocal.append(dynamodbObjGenerator.generate(fileHandler.readContent(eachRowVal)));
+                        sbLocal.append(",");
+                    }
                 }
                 String finalJsonVal = sbLocal.toString().substring(0, sbLocal.toString().length() - 1);
 
