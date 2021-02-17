@@ -61,8 +61,12 @@ public class DynamodbObjGenerator {
                 properties.setKeySchema(keySchemaList);
                 properties.setAttributeDefinitions(attributeDefinitionList);
                 properties.setTableName(tableName);
-                properties.setGlobalSecondaryIndexes(globalSecondaryIndices);
-                properties.setLocalSecondaryIndexes(localSecondaryIndices);
+                if (globalSecondaryIndices!=null && globalSecondaryIndices.size()>0) {
+                    properties.setGlobalSecondaryIndexes(globalSecondaryIndices);
+                }
+                if (localSecondaryIndices!=null && localSecondaryIndices.size()>0) {
+                    properties.setLocalSecondaryIndexes(localSecondaryIndices);
+                }
 
                 myDynamoDBTable.setProperties(properties);
                 myDynamoDBTable.setType("AWS::DynamoDB::Table");
